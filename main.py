@@ -466,9 +466,9 @@ async def on_message(message):
             def servermember(user_id):
                 for server in client.servers:
                     member_obj = server.get_member(user_id)
-                    if member_obj is not None:
-                        return member_obj
-                print(user_id)
+                    if member_obj is None:
+                        continue
+                    return member_obj
 
         many = '10'
         for i in ['20', '30', '40', '50']:
@@ -483,6 +483,8 @@ async def on_message(message):
         for i in range(int(many)):
             try:
                 member = servermember(leaderboard[i][0])  # fehler bei Dateischreibung
+                if member is None:
+                    continue
                 score = leaderboard[i][1]
                 embed.add_field(
                     name=str(i+1)+".",
