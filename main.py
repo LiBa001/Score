@@ -617,4 +617,4 @@ async def on_server_join(server):
                                             "For more information, please type `$help`!".format(server.name))
 
 
-client.run("MzQyMDE3NzUyNDM0OTk5MzA2.DG-GXA.OBRHheuH1Pn2T-xEM8PprBiCHdA")
+client.run("[BOT-TOKEN]") #  insert token
