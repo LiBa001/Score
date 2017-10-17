@@ -583,6 +583,14 @@ async def on_message(message):
             await client.send_message(message.channel, embed=embed)
         except discord.errors.Forbidden:
             pass
+    
+    elif message.content.startswith(prefix + 'setscore'):
+        if message.author.id not in admin_ids:
+            return 0
+        
+        content = message.content.split(' ')[1]
+        
+        sqlib.users.update(message.mentions[0].id, {'score': int(content)})
 
 
 @client.event
