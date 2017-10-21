@@ -591,6 +591,9 @@ async def on_message(message):
         content = message.content.split(' ')[1]
         
         sqlib.users.update(message.mentions[0].id, {'score': int(content)})
+    
+    elif client.user in message.mentions:
+        await client.send_message(message.channel, "Type `{0}help` to see available commands.".format(prefix))
 
 
 @client.event
