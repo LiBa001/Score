@@ -22,3 +22,5 @@ Join the [Official Score Support](https://discord.gg/z3X3uN4) server on Discord.
 Wenn der Bot auf dem Server ist, gib *$help* ein, um mehr über die einzelnen Befehle zu erfahren.
 
 Tritt dem [Official Score Support](https://discord.gg/z3X3uN4) Server auf Discord bei.
+
+![Score Logo](https://images.discordapp.net/avatars/342017752434999306/708aeb56555c2b2ac5099c2c2f66959b.png?size=512 "Score")
