@@ -2,10 +2,10 @@
 
 ## english
 
-###Concept
+### Concept
 Score records the activity of every user. That includes messages, reactions and how often he was helpful. For the last one other users can $thank you for helping them.
 
-###Features
+### Features
 There are a global and a local leaderboard. Local means only users from the current Server.
 Every user can see all of his data.
 The bot prefix can individually be changed for a Server.
