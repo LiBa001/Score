@@ -1,6 +1,6 @@
 import discord
-import asyncio
-import time
+import json
+import urllib.request
 import sqlib
 
 client = discord.Client()
@@ -81,6 +81,32 @@ strike_help = Help("Allows admins to strike users who act against the server rul
 footer = "~ bot by Liba | LiBa01#8817"
 
 
+def post_to_dbotsorg():
+    count_json = json.dumps({
+        "server_count": len(client.servers)
+    })
+
+    # Resolve HTTP redirects
+    dbotsorg_redirect_url = urllib.request.urlopen(
+        "https://discordbots.org/api/bots/{0}/stats".format(client.user.id)
+    ).geturl()
+
+    # Construct request and post server count
+    dbotsorg_req = urllib.request.Request(dbotsorg_redirect_url)
+
+    dbotsorg_req.add_header(
+        "Content-Type",
+        "application/json"
+    )
+
+    dbotsorg_req.add_header(
+        "Authorization",
+        "<API_KEY>"
+    )
+
+    urllib.request.urlopen(dbotsorg_req, count_json.encode("ascii"))
+
+
 @client.event
 async def on_ready():
     print(client.user.name)
@@ -88,6 +114,7 @@ async def on_ready():
     for server in client.servers:
         if sqlib.servers.get(server.id) is None:
             sqlib.servers.add_element(server.id, {'prefix': '$'})
+    post_to_dbotsorg()
 
 
 @client.event
@@ -621,6 +648,7 @@ async def on_reaction_remove(reaction, user):
 
 @client.event
 async def on_server_join(server):
+    post_to_dbotsorg()
     if sqlib.servers.get(server.id) is None:
         sqlib.servers.add_element(server.id, {'prefix': '$'})
 
@@ -630,4 +658,4 @@ async def on_server_join(server):
                                             "For more information, please type `$help`!".format(server.name))
 
 
-client.run("[BOT-TOKEN]") #  insert token
+client.run("[BOT-TOKEN]")  # insert token
