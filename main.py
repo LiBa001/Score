@@ -725,10 +725,10 @@ async def on_server_join(server):
 
 async def uptime_count():
     await client.wait_until_ready()
-    up_hours = 0
     global up_hours
-    up_minutes = 0
     global up_minutes
+    up_hours = 0
+    up_minutes = 0
 
     while not client.is_closed:
         await asyncio.sleep(0.1)
