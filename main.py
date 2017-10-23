@@ -2,6 +2,7 @@ import discord
 import json
 import urllib.request
 import sqlib
+import asyncio
 
 client = discord.Client()
 admin_ids = ["269959141508775937"]
@@ -56,7 +57,9 @@ prefix_help = Help("This is for changing the command-prefix. "
                    "This can only be done by a server admin.")
 help_help = Help("Shows a help message. "
                  "If you are an admin, I'll send it into the server channel, "
-                 "otherwise I'll send you a private message.")
+                 "otherwise I'll send you a private message.\n"
+                 "You can also type `help` after any command to only get the specific help.\n"
+                 "For example: `{prefix}stats help`")
 r_lb_help = Help("Shows {0}. "
                  "It's the {1} of all users "
                  "that are registered in the bot's leaderboard. "
@@ -77,8 +80,9 @@ strike_help = Help("Allows admins to strike users who act against the server rul
                    "For example: `{prefix}strike show @Score#6196 `\n"
                    "This command is only usable for server-admins.\n"
                    "Getting strikes affects the score. If you have three strikes, this will reset your score to zero.")
+info_help = Help("Detailed information about the bot and more.")
 
-footer = "~ bot by Liba | LiBa01#8817"
+footer = "~ bot by Linus Bartsch | LiBa01#8817"
 
 
 def post_to_dbotsorg():
@@ -134,7 +138,7 @@ async def on_message(message):
         sqlib.users.add_to_value(message.author.id, 'score', 1)
 
     commands = ['score', 'messages', 'reactions', 'stats', 'statistics', 'thanks', 'invite', 'prefix', 'help', 'rank',
-                'leaderboard', 'lb', 'strike']
+                'leaderboard', 'lb', 'strike', 'info', 'about']
 
     commands = list(map(lambda cmd: prefix + cmd, commands))
 
@@ -256,6 +260,9 @@ async def on_message(message):
             name="Strikes",
             value=strikes
         )
+        embed.set_footer(
+            text=footer
+        )
         await client.send_message(message.channel, embed=embed)
 
         try:
@@ -340,7 +347,7 @@ async def on_message(message):
         if message.content[6:] == "help":
             help_embed = discord.Embed(
                 title="Help",
-                description=help_help.message,
+                description=help_help.message.format(prefix=prefix),
                 color=0xd5c300
             )
             await client.send_message(message.channel, embed=help_embed)
@@ -384,7 +391,7 @@ async def on_message(message):
         )
         embed.add_field(
             name=prefix + "help",
-            value=help_help.message
+            value=help_help.message.format(prefix=prefix)
         )
         embed.add_field(
             name=prefix + "rank",
@@ -399,6 +406,10 @@ async def on_message(message):
             value=strike_help.message.format(prefix=prefix)
         )
         embed.add_field(
+            name=prefix + "info",
+            value=info_help.message
+        )
+        embed.add_field(
             name="About recording:",
             value=recording_help.message
         )
@@ -407,7 +418,7 @@ async def on_message(message):
         )
         embed.set_author(
             name="Score",
-            url="https://discordapp.com/oauth2/authorize?client_id=342017752434999306&scope=bot&permissions=0x00004800",
+            url="https://discordapp.com/oauth2/authorize?client_id=342017752434999306&scope=bot&permissions=27712",
             icon_url="https://cdn.discordapp.com/app-icons/342017752434999306/708aeb56555c2b2ac5099c2c2f66959b.png"
         )
         try:
@@ -618,6 +629,60 @@ async def on_message(message):
         content = message.content.split(' ')[1]
         
         sqlib.users.update(message.mentions[0].id, {'score': int(content)})
+
+    elif message.content.lower().startswith((prefix + 'info', prefix + 'about')):
+        if message.content[6:] == "help" or message.content[7:] == "help":
+            help_embed = discord.Embed(
+                title="Info/About",
+                description=info_help.message,
+                color=0xd5c300
+            )
+            await client.send_message(message.channel, embed=help_embed)
+            return 0
+
+        infotext = discord.Embed(
+            title="Score",
+            description="About the bot.",
+            color=0xd5c300,
+            url="https://liba001.github.io/Score/"
+        )
+        infotext.set_author(
+            name="Linus Bartsch | LiBa01#8817",
+            url="https://liba001.github.io/",
+            icon_url="https://avatars0.githubusercontent.com/u/30984789?s=460&v=4"
+        )
+        infotext.set_thumbnail(
+            url="https://images.discordapp.net/avatars/342017752434999306/708aeb56555c2b2ac5099c2c2f66959b.png?size=512"
+        )
+        infotext.add_field(
+            name="Developer",
+            value="Name: **Linus Bartsch**\n"
+                  "Discord: **LiBa01#8817**\n"
+                  "GitHub: [LiBa001](https://github.com/LiBa001)\n"
+                  "I'm also at [Discordbots.org](https://discordbots.org/user/269959141508775937)",
+            inline=True
+        )
+        infotext.add_field(
+            name="Developed in:",
+            value="Language: **Python3.6**\n"
+                  "Library: **discord.py** (0.16.8)\n"
+        )
+        infotext.add_field(
+            name="Commands",
+            value="Type `{0}help` to get all commands.\n"
+                  "Join the [Official Support Server](https://discord.gg/z3X3uN4) "
+                  "if you have any questions or suggestions.".format(prefix)
+        )
+        infotext.add_field(
+            name="Stats",
+            value="Server count: **{0}**\n"
+                  "Uptime: **{1}** hours, **{2}** minutes".format(len(client.servers), up_hours, up_minutes)
+        )
+        infotext.set_footer(
+            text="Special thanks to *MaxiHuHe04#8905* who supported me a few times."
+        )
+
+        await client.send_message(message.channel, embed=infotext)
     
     elif client.user in message.mentions:
         await client.send_message(message.channel, "Type `{0}help` to see available commands.".format(prefix))
@@ -658,4 +723,20 @@ async def on_server_join(server):
                                             "For more information, please type `$help`!".format(server.name))
 
 
+async def uptime_count():
+    await client.wait_until_ready()
+    up_hours = 0
+    global up_hours
+    up_minutes = 0
+    global up_minutes
+
+    while not client.is_closed:
+        await asyncio.sleep(0.1)
+        up_minutes += 1
+        if up_minutes == 60:
+            up_minutes = 0
+            up_hours += 1
+
+
+client.loop.create_task(uptime_count())
 client.run("[BOT-TOKEN]")  # insert token
