@@ -679,7 +679,7 @@ async def on_message(message):
                   "Uptime: **{1}** hours, **{2}** minutes".format(len(client.servers), up_hours, up_minutes)
         )
         infotext.set_footer(
-            text="Special thanks to *MaxiHuHe04#8905* who supported me a few times."
+            text="Special thanks to MaxiHuHe04#8905 who supported me a few times."
         )
 
         await client.send_message(message.channel, embed=infotext)
@@ -690,7 +690,8 @@ async def on_message(message):
 
 @client.event
 async def on_member_join(member):
-    sqlib.users.add_element(member.id)
+    if sqlib.users.get(member.id) is None:
+        sqlib.users.add_element(member.id)
 
 
 @client.event
