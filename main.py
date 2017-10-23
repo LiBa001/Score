@@ -731,7 +731,7 @@ async def uptime_count():
     up_minutes = 0
 
     while not client.is_closed:
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(60)
         up_minutes += 1
         if up_minutes == 60:
             up_minutes = 0
