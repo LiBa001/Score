@@ -85,30 +85,35 @@ info_help = Help("Detailed information about the bot and more.")
 footer = "~ bot by Linus Bartsch | LiBa01#8817"
 
 
-def post_to_dbotsorg():
-    count_json = json.dumps({
-        "server_count": len(client.servers)
-    })
+def post_to_apis():
+    domains = {
+        'discordbots.org': 'API-TOKEN',
+        'bots.discord.pw': 'API-TOKEN'
+    }
+    for domain in domains:
+        count_json = json.dumps({
+            "server_count": len(client.servers)
+        })
 
-    # Resolve HTTP redirects
-    dbotsorg_redirect_url = urllib.request.urlopen(
-        "https://discordbots.org/api/bots/{0}/stats".format(client.user.id)
-    ).geturl()
+        # Resolve HTTP redirects
+        api_redirect_url = urllib.request.urlopen(
+            "https://{0}/api/bots/{1}/stats".format(domain, client.user.id)
+        ).geturl()
 
-    # Construct request and post server count
-    dbotsorg_req = urllib.request.Request(dbotsorg_redirect_url)
+        # Construct request and post server count
+        api_req = urllib.request.Request(api_redirect_url)
 
-    dbotsorg_req.add_header(
-        "Content-Type",
-        "application/json"
-    )
+        api_req.add_header(
+            "Content-Type",
+            "application/json"
+        )
 
-    dbotsorg_req.add_header(
-        "Authorization",
-        "<API_KEY>"
-    )
+        api_req.add_header(
+            "Authorization",
+            domains[domain]
+        )
 
-    urllib.request.urlopen(dbotsorg_req, count_json.encode("ascii"))
+        urllib.request.urlopen(api_req, count_json.encode("ascii"))
 
 
 @client.event
@@ -118,7 +123,7 @@ async def on_ready():
     for server in client.servers:
         if sqlib.servers.get(server.id) is None:
             sqlib.servers.add_element(server.id, {'prefix': '$'})
-    post_to_dbotsorg()
+    post_to_apis()
 
 
 @client.event
@@ -490,7 +495,7 @@ async def on_message(message):
 
         rank_list = sqlib.users.sort('score')
         if message.content[13:] == "here" or message.content[4:] == "here":
-            rank_list = rank_list[:500]
+            rank_list = rank_list[:300]
             mode = "this server"
             server_members = message.server.members
             l = lambda element: message.server.get_member(element[0]) in server_members
@@ -680,7 +685,7 @@ async def on_message(message):
             name="Stats",
             value="Server count: **{0}**\n"
                   "Uptime: **{1}** hours, **{2}** minutes\n"
-                  "Member count: {3}".format(len(client.servers), up_hours, up_minutes, len(list(client.get_all_members())))
+                  "Member count: **{3}**".format(len(client.servers), up_hours, up_minutes, len(list(client.get_all_members())))
         )
         infotext.set_footer(
             text="Special thanks to MaxiHuHe04#8905 who supported me a few times."
@@ -718,7 +723,7 @@ async def on_reaction_remove(reaction, user):
 
 @client.event
 async def on_server_join(server):
-    post_to_dbotsorg()
+    post_to_apis()
     if sqlib.servers.get(server.id) is None:
         sqlib.servers.add_element(server.id, {'prefix': '$'})
 
@@ -726,6 +731,11 @@ async def on_server_join(server):
                                             "invited me to your server '{0}' :slight_smile: \n"
                                             "My default command prefix is `$`. "
                                             "For more information, please type `$help`!".format(server.name))
+
+
+@client.event
+async def on_server_remove(server):
+    post_to_apis()
 
 
 async def uptime_count():
