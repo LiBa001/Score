@@ -490,14 +490,17 @@ async def on_message(message):
 
         rank_list = sqlib.users.sort('score')
         if message.content[13:] == "here" or message.content[4:] == "here":
+            rank_list = rank_list[:200]
             mode = "this server"
-            l = lambda element: message.server.get_member(element[0]) in message.server.members
+            server_members = message.server.members
+            l = lambda element: message.server.get_member(element[0]) in server_members
             leaderboard = list(filter(l, rank_list))
 
             def servermember(user_id):
                 return message.server.get_member(user_id)
 
         else:
+            rank_list = rank_list[:30]
             mode = "all registered users"
             leaderboard = rank_list
 
@@ -509,7 +512,7 @@ async def on_message(message):
                     return member_obj
 
         many = '10'
-        for i in ['20', '30', '40', '50']:
+        for i in ['15', '20', '25']:
             if i in message.content:
                 many = i
 
@@ -676,7 +679,8 @@ async def on_message(message):
         infotext.add_field(
             name="Stats",
             value="Server count: **{0}**\n"
-                  "Uptime: **{1}** hours, **{2}** minutes".format(len(client.servers), up_hours, up_minutes)
+                  "Uptime: **{1}** hours, **{2}** minutes\n"
+                  "Member count: {3}".format(len(client.servers), up_hours, up_minutes, len(list(client.get_all_members())))
         )
         infotext.set_footer(
             text="Special thanks to MaxiHuHe04#8905 who supported me a few times."
