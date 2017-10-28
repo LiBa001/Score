@@ -96,9 +96,7 @@ def post_to_apis():
         })
 
         # Resolve HTTP redirects
-        api_redirect_url = urllib.request.urlopen(
-            "https://{0}/api/bots/{1}/stats".format(domain, client.user.id)
-        ).geturl()
+        api_redirect_url = "https://{0}/api/bots/{1}/stats".format(domain, client.user.id)
 
         # Construct request and post server count
         api_req = urllib.request.Request(api_redirect_url)
