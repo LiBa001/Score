@@ -490,7 +490,7 @@ async def on_message(message):
 
         rank_list = sqlib.users.sort('score')
         if message.content[13:] == "here" or message.content[4:] == "here":
-            rank_list = rank_list[:200]
+            rank_list = rank_list[:500]
             mode = "this server"
             server_members = message.server.members
             l = lambda element: message.server.get_member(element[0]) in server_members
