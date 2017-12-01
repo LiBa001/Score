@@ -453,8 +453,10 @@ async def on_message(message):
         mytup = sqlib.users.get(message.author.id, 'id, score')
 
         if message.content[6:] == "here":
-            l = lambda element: message.server.get_member(element[0]) in message.server.members
-            serverboard = list(filter(l, leaderboard))
+            member_ids = [m.id for m in message.server.members]
+            serverboard = [e for e in leaderboard if e[0] in member_ids]
+            # l = lambda element: message.server.get_member(element[0]) in message.server.members
+            # serverboard = list(filter(l, leaderboard))
 
             position = serverboard.index(mytup) + 1
 
