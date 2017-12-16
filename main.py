@@ -3,9 +3,11 @@ import json
 import urllib.request
 import sqlib
 import asyncio
+import time
 
 client = discord.Client()
 admin_ids = ["269959141508775937"]
+spam_protector = {}
 
 
 class Help:
@@ -82,7 +84,7 @@ strike_help = Help("Allows admins to strike users who act against the server rul
                    "Getting strikes affects the score. If you have three strikes, this will reset your score to zero.")
 info_help = Help("Detailed information about the bot and more.")
 
-footer = "~ bot by Linus Bartsch | LiBa01#8817"
+footer = "~ bot by LiBa01#8817"
 
 
 def post_to_apis():
@@ -274,6 +276,15 @@ async def on_message(message):
             pass
 
     elif message.content.lower().startswith(prefix + "thanks"):
+        last_executed = spam_protector.get(message.author.id, time.time() - 500)
+        if last_executed > time.time() - 500:
+            await client.send_message(
+                message.channel,
+                ":cool: :arrow_down: "
+                "You can thank your next helper in {0} seconds. :timer:".format(500 - int(time.time() - last_executed))
+                )
+            return None
+
         if message.content[8:] == "help":
             help_embed = discord.Embed(
                 title="Thanks",
@@ -299,6 +310,9 @@ async def on_message(message):
                     else:
                         sqlib.users.add_to_value(user.id, 'score', 3)
                     await client.add_reaction(message, "✅")
+
+                    spam_protector[message.author.id] = time.time()
+
         except IndexError:
             await client.send_message(message.channel, "Which user do you mean? Mention him!")
 
@@ -495,11 +509,10 @@ async def on_message(message):
 
         rank_list = sqlib.users.sort('score')
         if message.content[13:] == "here" or message.content[4:] == "here":
-            rank_list = rank_list[:300]
+            member_ids = [m.id for m in message.server.members]
+            leaderboard = [e for e in rank_list if e[0] in member_ids]
+
             mode = "this server"
-            server_members = message.server.members
-            l = lambda element: message.server.get_member(element[0]) in server_members
-            leaderboard = list(filter(l, rank_list))
 
             def servermember(user_id):
                 return message.server.get_member(user_id)
