@@ -1,5 +1,8 @@
 # Score
 
+> **INFO**  
+> The Score Discord bot is *currently* offline and not maintained anymore and it propably **won't** be hosted again in the future. So you cannot use it except you try to host it by yourself which the bot was not invented for.
+
 ## english
 
 ### Concept
